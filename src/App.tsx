@@ -2,18 +2,66 @@ import { useState } from "react";
 import { Home } from "./components/Home";
 import { FishIndex } from "./components/FishIndex";
 import { Rankings } from "./components/Rankings";
-import { Fish, Moon, Trophy } from "lucide-react";
+import { StyleDemo } from "./components/StyleDemo";
+import { Account } from "./components/Account";
+import { Fish, Moon, Trophy, Palette, User } from "lucide-react";
 
-type Page = "home" | "index" | "rankings";
+type Page = "home" | "index" | "rankings" | "styles" | "account";
+
+export interface CatchRecord {
+  fishId: string;
+  fishName: string;
+  timestamp: Date;
+  location?: string;
+  detailedLocation?: string;
+  size?: number; // in inches
+  weight?: number; // in pounds
+  weather?: {
+    condition: string;
+    temperature: number;
+    windSpeed: number;
+  };
+  bait?: string;
+  waterTemp?: number;
+}
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [caughtFish, setCaughtFish] = useState<Set<string>>(
-    new Set(),
-  );
+  const [catchHistory, setCatchHistory] = useState<CatchRecord[]>([]);
 
-  const handleCatchFish = (fishId: string) => {
-    setCaughtFish((prev) => new Set([...prev, fishId]));
+  const caughtFish = new Set(catchHistory.map(record => record.fishId));
+
+  const handleCatchFish = (fishId: string, fishName: string) => {
+    const weatherConditions = ['Sunny', 'Cloudy', 'Partly Cloudy', 'Overcast', 'Light Rain'];
+    const baits = ['Live Bait', 'Artificial Lure', 'Fly', 'Jig', 'Crankbait', 'Spinnerbait'];
+    const locations = [
+      { short: 'Local Waters', detailed: 'Lake Marion, North Dock' },
+      { short: 'River Bend', detailed: 'Cooper River, Mile Marker 12' },
+      { short: 'Ocean Pier', detailed: 'Folly Beach Pier, South End' },
+      { short: 'Creek', detailed: 'Shem Creek, Main Channel' },
+    ];
+    
+    const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+    
+    setCatchHistory((prev) => [
+      ...prev,
+      {
+        fishId,
+        fishName,
+        timestamp: new Date(),
+        location: randomLocation.short,
+        detailedLocation: randomLocation.detailed,
+        size: Math.floor(Math.random() * 30) + 10, // 10-40 inches
+        weight: Math.floor(Math.random() * 20) + 2, // 2-22 lbs
+        weather: {
+          condition: weatherConditions[Math.floor(Math.random() * weatherConditions.length)],
+          temperature: Math.floor(Math.random() * 30) + 60, // 60-90°F
+          windSpeed: Math.floor(Math.random() * 15) + 5, // 5-20 mph
+        },
+        bait: baits[Math.floor(Math.random() * baits.length)],
+        waterTemp: Math.floor(Math.random() * 30) + 55, // 55-85°F
+      }
+    ]);
   };
 
   return (
@@ -26,10 +74,13 @@ export default function App() {
         {currentPage === "index" && (
           <FishIndex
             caughtFish={caughtFish}
+            catchHistory={catchHistory}
             onCatchFish={handleCatchFish}
           />
         )}
         {currentPage === "rankings" && <Rankings />}
+        {currentPage === "styles" && <StyleDemo />}
+        {currentPage === "account" && <Account />}
       </main>
 
       {/* Bottom Navigation - Android Style */}
@@ -85,6 +136,40 @@ export default function App() {
                 className={`text-xs transition-all ${currentPage === "rankings" ? "font-semibold" : ""}`}
               >
                 Rankings
+              </span>
+            </button>
+            <button
+              onClick={() => setCurrentPage("styles")}
+              className={`flex flex-col items-center justify-center gap-1 px-6 py-2 rounded-xl transition-all min-w-[80px] active:scale-95 ${
+                currentPage === "styles"
+                  ? "text-cyan-600"
+                  : "text-gray-500 active:text-cyan-500"
+              }`}
+            >
+              <Palette
+                className={`w-6 h-6 transition-all ${currentPage === "styles" ? "scale-110" : ""}`}
+              />
+              <span
+                className={`text-xs transition-all ${currentPage === "styles" ? "font-semibold" : ""}`}
+              >
+                Styles
+              </span>
+            </button>
+            <button
+              onClick={() => setCurrentPage("account")}
+              className={`flex flex-col items-center justify-center gap-1 px-6 py-2 rounded-xl transition-all min-w-[80px] active:scale-95 ${
+                currentPage === "account"
+                  ? "text-cyan-600"
+                  : "text-gray-500 active:text-cyan-500"
+              }`}
+            >
+              <User
+                className={`w-6 h-6 transition-all ${currentPage === "account" ? "scale-110" : ""}`}
+              />
+              <span
+                className={`text-xs transition-all ${currentPage === "account" ? "font-semibold" : ""}`}
+              >
+                Account
               </span>
             </button>
           </div>

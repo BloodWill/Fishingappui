@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { useState } from 'react';
 
 interface HomeProps {
-  onCatchFish: (fishId: string) => void;
+  onCatchFish: (fishId: string, fishName: string) => void;
 }
 
 export function Home({ onCatchFish }: HomeProps) {
@@ -17,10 +17,16 @@ export function Home({ onCatchFish }: HomeProps) {
     setTimeout(() => {
       setIsScanning(false);
       // Randomly catch a fish for demo purposes
-      const fishIds = ['bass', 'trout', 'salmon', 'pike', 'catfish'];
-      const randomFish = fishIds[Math.floor(Math.random() * fishIds.length)];
-      onCatchFish(randomFish);
-      alert(`Fish recognized! You caught a ${randomFish}!`);
+      const fishOptions = [
+        { id: 'largemouthbass', name: 'Largemouth Bass' },
+        { id: 'rainbowtrout', name: 'Rainbow Trout' },
+        { id: 'stripedbass', name: 'Striped Bass' },
+        { id: 'northernpike', name: 'Northern Pike' },
+        { id: 'catfish', name: 'Catfish' }
+      ];
+      const randomFish = fishOptions[Math.floor(Math.random() * fishOptions.length)];
+      onCatchFish(randomFish.id, randomFish.name);
+      alert(`Fish recognized! You caught a ${randomFish.name}!`);
     }, 2000);
   };
 
